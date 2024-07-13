@@ -1,0 +1,42 @@
+.MODEL SMALL
+.STACK 100H
+.DATA
+	 PORT_A  EQU 00H
+	 PORT_B EQU 02H
+	 PORT_C EQU 04H
+	 CWR EQU 06H
+	 CW EQU 80H
+.CODE
+MAIN PROC
+      MOV AX, @DATA
+      MOV DS, AX
+      
+      MOV DX, CWR
+      MOV AL, CW
+      OUT DX, AL
+      
+ LOOP_FOR:
+      MOV DX, PORT_A
+      MOV AL, 01H
+      OUT DX, AL
+      CALL DELAY
+      ;OFF LED
+      MOV DX, PORT_A
+      MOV AL, 00H
+      OUT DX, AL
+      CALL DELAY
+      JMP LOOP_FOR
+      
+ MAIN ENDP
+      DELAY PROC
+	 XOR CX, CX
+	 MOV CX, 50000
+      DELAY_LOOP:
+	 LOOP DELAY_LOOP
+	 MOV CX, 50000
+      DELAY_LOOP2:
+	 LOOP DELAY_LOOP2
+      RET
+      DELAY ENDP
+ END MAIN
+      
