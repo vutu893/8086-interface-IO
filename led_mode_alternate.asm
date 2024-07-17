@@ -1,0 +1,68 @@
+;lap trinh 8086 voi 8 led ket noi voi cong A cua 8255A o mode0
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PORT_A EQU 00H
+    PORT_B EQU 02H
+    PORT_C EQU 04H
+    CWR EQU 06H
+    CW DB 80H
+    LED DB 01H, 02H, 04H, 08H, 10H, 20H, 40H, 80H
+    LED2 DB ?
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV DX, CWR
+    MOV AL, CW
+    OUT DX, AL
+ 
+ HIENTHI:
+     MOV DX, PORT_A
+     MOV AL, 00H
+     OUT DX, AL
+     CALL DELAY
+ MODE1:
+      LEA SI, LED
+      XOR BX, BX
+ HIENTHI_MODE1:
+      MOV DX, PORT_A
+      MOV AL, [SI + BX]
+      OUT DX, AL
+      CALL DELAY
+      INC BX
+      CMP BX, 8
+      JGE MODE2
+      JMP HIENTHI_MODE1
+ MODE2:
+      MOV AL, 00H
+      MOV LED2, 01H
+      MOV DX, PORT_A
+      OUT DX, AL
+      CALL DELAY
+ HIENTHI_MODE2:
+      MOV DX, PORT_A
+      OR AL, LED2
+      OUT DX, AL
+      CALL DELAY
+      SHL LED2, 1
+      CMP LED2, 00H
+      JE HIENTHI
+      JMP HIENTHI_MODE2
+   
+MAIN ENDP
+     DELAY PROC
+	    XOR CX, CX
+	    MOV CX, 50000
+     DELAY_LOOP:
+	    LOOP DELAY_LOOP
+	    MOV CX, 50000
+     DELAY_LOOP2:
+	    LOOP DELAY_LOOP2
+	    MOV CX, 50000
+     DELAY_LOOP3:
+	    LOOP DELAY_LOOP3
+     RET
+     DELAY ENDP
+END MAIN   
