@@ -1,0 +1,47 @@
+;lap trinh 8086 voi 8255A o che do 0 voi nut bam
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PORT_A EQU 00H
+    PORT_B EQU 02H
+    PORT_C EQU 04H
+    CWR EQU 06H
+    CW EQU 81H
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV DX, CWR
+    MOV AL, CW
+    OUT DX, AL
+    
+CHECK_BUTTON:
+    IN AL, PORT_C
+    TEST AL, 01H
+    JZ ACTIVE
+NOT_ACTIVE:
+    MOV DX, PORT_A
+    MOV AL, 00H
+    OUT DX, AL
+    CALL DELAY
+ACTIVE:
+    MOV DX, PORT_A
+    MOV AL, 0FFH
+    OUT DX, AL
+    CALL DELAY
+    JMP CHECK_BUTTON
+MAIN ENDP
+      DELAY PROC
+	    XOR CX, CX
+	    MOV CX, 50000
+     DELAY_LOOP:
+	    LOOP DELAY_LOOP
+	    MOV CX, 50000
+     DELAY_LOOP2:
+	    LOOP DELAY_LOOP2
+	    MOV CX, 50000
+     RET
+     DELAY ENDP
+        
+END MAIN
