@@ -1,0 +1,39 @@
+;lap trinh 8255A voi led 7 doan
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PORT_A EQU 00H
+    PORT_B EQU 02H
+    PORT_C EQU 04H
+    CWR EQU 06H
+    CW DB 80H
+    
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV DX, CWR
+    MOV AL, CW
+    OUT DX, AL
+    
+HIENTHI:
+    MOV DX, PORT_A
+    MOV AL, 40H
+    OUT DX, AL
+    CALL DELAY
+    MOV AL, 0F9H
+    OUT DX, AL
+    CALL DELAY
+    JMP HIENTHI
+MAIN ENDP
+    DELAY PROC
+        MOV CX, 50000
+    DELAY1:
+        LOOP DELAY1
+        MOV CX, 50000
+    DELAY2:
+        LOOP DELAY2
+     RET
+     DELAY ENDP
+END MAIN
