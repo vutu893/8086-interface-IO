@@ -1,0 +1,46 @@
+;dem tu 1 den 9 bang led 7 seg
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PORT_A EQU 00H
+    PORT_B EQU 02H
+    PORT_C EQU 04H
+    CWR EQU 06H
+    CW DB 80H
+    LED7SEG DB 0C0h,0F9h,0A4h,0B0h,099h,092h,082h,0F8h,080h,090h  
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV DX, CWR
+    MOV AL, CW
+    OUT DX, AL
+
+HIENTHI:
+    LEA SI, LED7SEG
+    XOR BX, BX
+HIENTHISO:
+    MOV DX, PORT_A
+    MOV AL, [SI + BX]
+    OUT DX, AL
+    CALL DELAY
+    INC BX    
+    CMP BX, 10
+    JGE HIENTHI
+    JMP HIENTHISO
+MAIN ENDP
+    DELAY PROC
+        MOV CX, 50000
+    DELAY1:
+        LOOP DELAY1
+        MOV CX, 50000
+    DELAY2:
+        LOOP DELAY2
+     MOV CX, 50000
+    DELAY3:
+	 LOOP DELAY3
+    RET
+    DELAY ENDP
+END MAIN
+    
