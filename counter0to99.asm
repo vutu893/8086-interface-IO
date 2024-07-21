@@ -1,0 +1,65 @@
+;dem tu 0 den 99 bang cach su dung hai led 7 seg don
+.MODEL SMALL
+.STACK 100H
+.DATA
+    PORT_A EQU 00H
+    PORT_B EQU 02H
+    PORT_C EQU 04H
+    CWR EQU 06H
+    CW EQU 80H
+    LED_7SEG DB 0C0h,0F9h,0A4h,0B0h,099h,092h,082h,0F8h,080h,090h
+    CHUC db ?
+    DONVI db ?
+.CODE
+MAIN PROC
+    MOV AX, @DATA
+    MOV DS, AX
+    
+    MOV DX, CWR
+    MOV AL, CW
+    OUT DX, AL
+    
+HIENTHI:
+    MOV CHUC, 0
+    MOV DONVI, 0
+    LEA SI, LED_7SEG 
+TRANGTHAIBANDAU:
+    MOV DX, PORT_A
+    MOV AL, 0C0H
+    OUT DX, AL
+    MOV DX, PORT_B
+    OUT DX, AL
+HIENTHIHANGDONVI:
+    MOV DX, PORT_A
+    XOR BX, BX   
+    MOV BL, DONVI
+    MOV AL, [SI + BX]
+    OUT DX, AL
+    CALL DELAY
+    INC DONVI
+    CMP DONVI, 9
+    JG HIENTHIHANGCHUC
+    JMP HIENTHIHANGDONVI
+
+HIENTHIHANGCHUC:
+    INC CHUC
+    MOV DONVI, 0
+    XOR BX, BX
+    MOV BL, CHUC
+    MOV DX, PORT_B
+    MOV AL, [SI + BX]
+    OUT DX, AL 
+    
+    CMP CHUC, 9
+    JG HIENTHI
+    JMP HIENTHIHANGDONVI
+MAIN ENDP
+    DELAY PROC
+        MOV CX, 50000
+    DELAY1:
+        LOOP DELAY1
+
+  
+    RET
+    DELAY ENDP
+END MAIN
