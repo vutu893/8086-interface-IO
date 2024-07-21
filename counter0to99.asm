@@ -1,4 +1,4 @@
-;dem tu 0 den 99 bang cach su dung hai led 7 seg don
+;dem tu 0 den 99 bang cach su dung 1 led 7 seg doi
 .MODEL SMALL
 .STACK 100H
 .DATA
@@ -8,8 +8,10 @@
     CWR EQU 06H
     CW EQU 80H
     LED_7SEG DB 0C0h,0F9h,0A4h,0B0h,099h,092h,082h,0F8h,080h,090h
-    CHUC db ?
-    DONVI db ?
+    CHUC DB 0
+    DONVI DB 0
+    COUNTER DB 0
+    MUOI DB 10
 .CODE
 MAIN PROC
     MOV AX, @DATA
@@ -18,41 +20,48 @@ MAIN PROC
     MOV DX, CWR
     MOV AL, CW
     OUT DX, AL
-    
+SETUP:
+    MOV COUNTER, 0    
+    LEA SI, LED_7SEG
+CHIA:
+    XOR AX, AX
+    MOV AL, COUNTER
+    DIV MUOI
 HIENTHI:
-    MOV CHUC, 0
-    MOV DONVI, 0
-    LEA SI, LED_7SEG 
-TRANGTHAIBANDAU:
-    MOV DX, PORT_A
-    MOV AL, 0C0H
-    OUT DX, AL
-    MOV DX, PORT_B
-    OUT DX, AL
+    MOV DONVI, AH
+    MOV CHUC, AL 
+    XOR CX, CX
+    MOV CX, 500
 HIENTHIHANGDONVI:
+    PUSH CX
+    MOV DX, PORT_B
+    MOV AL, 02H
+    OUT DX, AL
     MOV DX, PORT_A
-    XOR BX, BX   
+    XOR BX, BX
     MOV BL, DONVI
     MOV AL, [SI + BX]
     OUT DX, AL
-    CALL DELAY
-    INC DONVI
-    CMP DONVI, 9
-    JG HIENTHIHANGCHUC
-    JMP HIENTHIHANGDONVI
-
+    CALL DELAY_1MS
 HIENTHIHANGCHUC:
-    INC CHUC
-    MOV DONVI, 0
+    MOV DX, PORT_B
+    MOV AL, 01H
+    OUT DX, AL
+    MOV DX, PORT_A
     XOR BX, BX
     MOV BL, CHUC
-    MOV DX, PORT_B
     MOV AL, [SI + BX]
-    OUT DX, AL 
+    OUT DX, AL
+    CALL DELAY_1MS
+    POP CX
+    DEC CX
+    CMP CX, 0
+    JNE HIENTHIHANGDONVI
+    INC COUNTER
+    CMP COUNTER, 99
+    JG SETUP
+    JMP CHIA
     
-    CMP CHUC, 9
-    JG HIENTHI
-    JMP HIENTHIHANGDONVI
 MAIN ENDP
     DELAY PROC
         MOV CX, 50000
@@ -61,5 +70,11 @@ MAIN ENDP
 
   
     RET
-    DELAY ENDP
+    DELAY ENDP 
+    DELAY_1MS PROC
+        MOV CX, 2857
+    DELAY_PROCESS:
+        LOOP DELAY_PROCESS
+    RET
+    DELAY_1MS ENDP
 END MAIN
